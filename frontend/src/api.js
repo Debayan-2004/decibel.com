@@ -1,27 +1,39 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5001/api/auth",
+    baseURL: "https://decibel_backend.vercel.app/api/auth",  // ✅ Updated for deployment
     headers: { "Content-Type": "application/json" },
-    withCredentials: true, // ✅ Important for authentication
+    withCredentials: true, // ✅ Ensure cookies are sent with requests
 });
 
-// Signup
-export const signup = async (userData) => {
-    const response = await API.post("/signup", userData);
-    return response.data;
+// ✅ Automatically attach token to protected requests
+API.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// 🔹 Helper function to handle errors gracefully
+const handleRequest = async (request) => {
+    try {
+        const response = await request();
+        return response.data;
+    } catch (error) {
+        throw error.response?.data?.msg || "An error occurred. Please try again.";
+    }
 };
 
-// Login
-export const login = async (userData) => {
-    const response = await API.post("/login", userData);
-    return response.data;
-};
+// ✅ Signup
+export const signup = async (userData) => handleRequest(() => API.post("/signup", userData));
 
-// Fetch Profile (Protected Route)
-export const getProfile = async (token) => {
-    const response = await API.get("/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-};
+// ✅ Login
+export const login = async (userData) => handleRequest(() => API.post("/login", userData));
+
+// ✅ Fetch Profile (Protected Route)
+export const getProfile = async () => handleRequest(() => API.get("/profile"));
+
