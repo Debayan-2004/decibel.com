@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "https://decibel_backend.vercel.app/api/auth",  // ✅ Updated for deployment
+    baseURL:'https://decibelbackend.vercel.app/';,  // ✅ Updated for deployment
     headers: { "Content-Type": "application/json" },
     withCredentials: true, // ✅ Ensure cookies are sent with requests
 });
