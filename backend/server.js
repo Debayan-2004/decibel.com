@@ -6,8 +6,11 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ Allow frontend to access backend from Vercel
-app.use(cors({ origin: "https://decibelcom.vercel.app", credentials: true }));
+app.use(cors({
+  origin: 'https://decibelcom.vercel.app',  // Frontend URL
+  methods: 'GET, POST, PUT, DELETE',
+  allowedHeaders: 'Content-Type, Authorization'
+}));
 
 // Middleware
 app.use(express.json());
